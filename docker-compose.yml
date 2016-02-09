@@ -1,0 +1,42 @@
+# Ambassador pattern
+fs:
+   image: busybox
+   volumes:
+   - ./:/srv/http
+   - ./auth.json:/root/.composer/auth.json
+   - ~/.composer/cache:/root/.composer/cache
+   - ~/.ssh:/ssh
+   command: chmod -R 777 /srv/http/var/cache /srv/http/var/logs /srv/http/var/sessions ; /bin/tail -f /dev/null
+
+ssh:
+  image: whilp/ssh-agent
+  container_name: ssh-agent
+
+#Stack PHP
+php:
+   build: ./docker/php-fpm/
+   links:
+   - ssh
+   volumes_from:
+   - fs
+   - ssh
+   ports:
+   - "9022:22"
+   environment:
+   - PHP_IDE_CONFIG=serverName=tennisRefacto-docker
+   - SSH_AUTH_SOCK=/root/.ssh/socket
+   env_file:
+   - '.env'
+
+#Stack NGINX
+nginx:
+   image: nginx
+   links:
+   - php:php-fpm-stack
+   volumes:
+   - ./docker/conf/nginx.conf:/nginx.conf
+   volumes_from:
+   - fs
+   ports:
+   - "1337:80"
+   command: nginx -c /nginx.conf
