@@ -1,4 +1,4 @@
-/app/bootstrap.php.cache
+/var/bootstrap.php.cache
 /var/cache/*
 !var/cache/.gitkeep
 /app/config/parameters.yml
@@ -6,6 +6,8 @@
 !var/logs/.gitkeep
 /app/phpunit.xml
 /bin/
+!/bin/.gitkeep
 /composer.phar
 /vendor/
 /web/bundles/
+.env
